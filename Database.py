@@ -4,12 +4,30 @@ import re
 
 kitchenDatabaseFilename = "\\Kitchen Database\\KitchenDatabase.ini"
 
+class TimeClass:    
+    def __init__(self, currentHour, currentMinute, currentMonth, currentDay, currentYear):
+        self.hour = currentHour
+        self.minute = currentMinute
+        self.month = currentMonth
+        self.day = currentDay
+        self.year = currentYear
+
 class DatabaseContents:
     def __init__(self, VIN, data):
         self.itemVIN = VIN
-        self.itemName = data[0][1]
-        self.itemTimeBefore = data[1][1]
-        self.itemTimeAfter = data[2][1]
+        length = len(data)
+        
+        for i in range(0, length):
+            if data[i][0] == "itemname":
+                self.itemName = data[i][1]
+            elif data[i][0] == "itemlifespanbefore":
+                self.itemTimeBefore = data[i][1]
+            elif data[i][0] == "itemlifespanafter":
+                self.itemTimeAfter = data[i][1]
+            elif data[i][0] == "itemtimeexpires":
+                self.itemTimeExpires = data[3][1]
+            else:
+                print "The data not found: "+data[i][0]
 
 def ReadInDatabase():
     currentDirectory = os.getcwd()
@@ -25,4 +43,10 @@ def ReadInDatabase():
         KitchenStructure.append(DatabaseContents(section, options))
     
     return KitchenStructure
-        
+
+def CheckIfItemsAreExpired(Current, Item):
+    FoodList = open("FoodList.ini", "w")
+    FoodList.close()
+
+    FoodIndex = ConfigParser.ConfigParser()
+    

@@ -1,6 +1,7 @@
 from Tkinter import *
 from ttk import *
 import Database as db
+from time import strftime
 
 class ApplicationWindow():
     def __init__(self, master):
@@ -46,8 +47,8 @@ class ApplicationWindow():
         self.itemLifespan_After_LABEL = Label(self.frame, text = "Item Lifespan After")
         self.itemLifespan_After_LABEL.grid(row=5, column=3, pady=2, padx=5, sticky=W)
 
-        self.cbtn = Button(self.frame, text="Close", command = self.frame.quit)
-        self.cbtn.grid(row=12, column=4, padx=5, pady = 5, sticky=E+S)
+        self.CloseButton = Button(self.frame, text="Close", command = self.frame.quit)
+        self.CloseButton.grid(row=12, column=4, padx=5, pady = 5, sticky=E+S)
         
 ##        self.hbtn = Button(self.frame, text="Help", command = helpWindow)
 ##        self.hbtn.grid(row=5, column=0, padx=5)
@@ -68,6 +69,10 @@ class ApplicationWindow():
             self.itemName.insert(0, foodInKitchen[listSelection[0]].itemName)
             self.itemLifespan_After.insert(0, foodInKitchen[listSelection[0]].itemTimeAfter)
             self.itemLifespan_Before.insert(0, foodInKitchen[listSelection[0]].itemTimeBefore)
+        elif widgetSelected == self.CloseButton:
+            self.frame.quit
+            
+
             
 def ListItem(PutMessageString):
     windowVariable.InsertListItem(PutMessageString) 
@@ -87,13 +92,40 @@ def AccessDatabase():
     length = len(foodInKitchen)
     for i in xrange(0,length):
         ListItem(foodInKitchen[i].itemName)
+
+def CalculateSpoilTimes():
+    print "You are not calculating the times."
+
+    timeString = strftime('%X %x %Z')
+    foundTimeNow = re.search("(.*?):(.*?):[0-9][0-9] (.*?)/(.*?)/(.*?) .*", timeString)    
+    if foundTimeNow:
+        hourNow = foundTimeNow.group(1)
+        minuteNow = foundTimeNow.group(2)
+        monthNow = foundTimeNow.group(3)
+        dayNow = foundTimeNow.group(4)
+        yearNow = int(foundTimeNow.group(5)) + 2000
         
+    length = len(foodInKitchen)
+    for i in range(0, length):
+        foundTimeExpired = re.search("(.*?):(.*?) (.*?)\.(.*?)\.(.*?)$", foodInKitchen[i].itemTimeExpires)
+        if foundTimeExpired:
+            hourExpired = foundTimeExpired.group(1)
+            minuteExpired = foundTimeExpired.group(2)
+            monthExpired = foundTimeExpired.group(3)
+            dayExpired = foundTimeExpired.group(4)
+            yearExpired = foundTimeExpired.group(5)
+            
+            TimeNow = db.TimeClass(hourNow, minuteNow, monthNow, dayNow, yearNow)
+            TimeItem = db.TimeClass(hourExpired, minuteExpired, monthExpired, dayExpired, yearExpired)
+            db.CheckIfItemsAreExpired(TimeNow, TimeItem)
+            
 def InsertListData(listIndex):
     print listIndex
 
 index = Tk()
 InitializeMainWindow(index)
 foodInKitchen = db.ReadInDatabase()
-index.after(1000, AccessDatabase)
+AccessDatabase()
+index.after(10, CalculateSpoilTimes)
 index.mainloop()
 
