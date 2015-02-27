@@ -37,15 +37,15 @@ class ApplicationWindow():
         self.itemName_LABEL = Label(self.frame, text = "Item Name")
         self.itemName_LABEL.grid(row=0, column=3, pady=2, padx=5, sticky=W)
 
-        self.itemLifespan_Before_LABEL = Label(self.frame, text = "Item Lifespan Before")
-        self.itemLifespan_Before_LABEL.grid(row=3, column=3, pady=2, padx=5, sticky=W)
-        self.itemLifespan_Before = Entry(self.frame, width = 8)
-        self.itemLifespan_Before.grid(row=4, column=3, padx=5, sticky=W)
+        self.itemDatePurchased = Entry(self.frame, width = 15)
+        self.itemDatePurchased.grid(row=4, column=3, padx=5, sticky=W)
+        self.itemDatePurchased_LABEL = Label(self.frame, text = "Date Purchased")
+        self.itemDatePurchased_LABEL.grid(row=3, column=3, pady=2, padx=5, sticky=W)
 
-        self.itemLifespan_After = Entry(self.frame, width = 8)
-        self.itemLifespan_After.grid(row=6, column=3, padx=5, sticky=W)
-        self.itemLifespan_After_LABEL = Label(self.frame, text = "Item Lifespan After")
-        self.itemLifespan_After_LABEL.grid(row=5, column=3, pady=2, padx=5, sticky=W)
+        self.itemSelfLifeTime = Entry(self.frame, width = 15)
+        self.itemSelfLifeTime.grid(row=6, column=3, padx=5, sticky=W)
+        self.itemSelfLifeTime_LABEL = Label(self.frame, text = "Date Expires")
+        self.itemSelfLifeTime_LABEL.grid(row=5, column=3, pady=2, padx=5, sticky=W)
 
         self.CloseButton = Button(self.frame, text="Close", command = self.frame.quit)
         self.CloseButton.grid(row=12, column=4, padx=5, pady = 5, sticky=E+S)
@@ -63,12 +63,12 @@ class ApplicationWindow():
         widgetSelected = event.widget
         if widgetSelected == self.area:
             self.itemName.delete(0, END)
-            self.itemLifespan_After.delete(0, END)
-            self.itemLifespan_Before.delete(0, END)
+            self.itemDatePurchased.delete(0, END)
+            self.itemSelfLifeTime.delete(0, END)
             listSelection = self.area.curselection()
             self.itemName.insert(0, foodInKitchen[listSelection[0]].itemName)
-            self.itemLifespan_After.insert(0, foodInKitchen[listSelection[0]].itemTimeAfter)
-            self.itemLifespan_Before.insert(0, foodInKitchen[listSelection[0]].itemTimeBefore)
+            self.itemDatePurchased.insert(0, foodInKitchen[listSelection[0]].datePurchased)
+            self.itemSelfLifeTime.insert(0, foodInKitchen[listSelection[0]].itemShelfLife)
         elif widgetSelected == self.CloseButton:
             self.frame.quit
             
@@ -105,19 +105,19 @@ def CalculateSpoilTimes():
         dayNow = foundTimeNow.group(4)
         yearNow = int(foundTimeNow.group(5)) + 2000
         
-    length = len(foodInKitchen)
-    for i in range(0, length):
-        foundTimeExpired = re.search("(.*?):(.*?) (.*?)\.(.*?)\.(.*?)$", foodInKitchen[i].itemTimeExpires)
-        if foundTimeExpired:
-            hourExpired = foundTimeExpired.group(1)
-            minuteExpired = foundTimeExpired.group(2)
-            monthExpired = foundTimeExpired.group(3)
-            dayExpired = foundTimeExpired.group(4)
-            yearExpired = foundTimeExpired.group(5)
-            
-            TimeNow = db.TimeClass(hourNow, minuteNow, monthNow, dayNow, yearNow)
-            TimeItem = db.TimeClass(hourExpired, minuteExpired, monthExpired, dayExpired, yearExpired)
-            db.CheckIfItemsAreExpired(TimeNow, TimeItem)
+##    length = len(foodInKitchen)
+##    for i in range(0, length):
+##        foundTimeExpired = re.search("(.*?):(.*?) (.*?)\.(.*?)\.(.*?)$", foodInKitchen[i].itemTimeExpires)
+##        if foundTimeExpired:
+##            hourExpired = foundTimeExpired.group(1)
+##            minuteExpired = foundTimeExpired.group(2)
+##            monthExpired = foundTimeExpired.group(3)
+##            dayExpired = foundTimeExpired.group(4)
+##            yearExpired = foundTimeExpired.group(5)
+##            
+##            TimeNow = db.TimeClass(hourNow, minuteNow, monthNow, dayNow, yearNow)
+##            TimeItem = db.TimeClass(hourExpired, minuteExpired, monthExpired, dayExpired, yearExpired)
+##            db.CheckIfItemsAreExpired(TimeNow, TimeItem)
             
 def InsertListData(listIndex):
     print listIndex

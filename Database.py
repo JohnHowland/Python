@@ -20,12 +20,10 @@ class DatabaseContents:
         for i in range(0, length):
             if data[i][0] == "itemname":
                 self.itemName = data[i][1]
-            elif data[i][0] == "itemlifespanbefore":
-                self.itemTimeBefore = data[i][1]
-            elif data[i][0] == "itemlifespanafter":
-                self.itemTimeAfter = data[i][1]
-            elif data[i][0] == "itemtimeexpires":
-                self.itemTimeExpires = data[3][1]
+            elif data[i][0] == "datepurchased":
+                self.datePurchased = data[i][1]
+            elif data[i][0] == "itemshelflife":
+                self.itemShelfLife = data[i][1]
             else:
                 print "The data not found: "+data[i][0]
 
