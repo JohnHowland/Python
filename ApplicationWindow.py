@@ -2,11 +2,14 @@ from Tkinter import *
 from ttk import *
 import Database as db
 from time import strftime
+from PIL import Image, ImageTk
+
+itemFilepath = "C:\\Projects\\Testing Location\\Smart Kitchen\\Product Image\\00000000.gif"
 
 class ApplicationWindow():
     def __init__(self, master):
         self.master = master
-        self.master.resizable(FALSE, FALSE)
+##        self.master.resizable(FALSE, FALSE)
         self.frame = Frame(self.master)
         self.master.bind('<Button-1>', self.click_button)
         self.master.curIndex = None
@@ -43,9 +46,24 @@ class ApplicationWindow():
         self.itemDatePurchased_LABEL.grid(row=3, column=3, pady=2, padx=5, sticky=W)
 
         self.itemSelfLifeTime = Entry(self.frame, width = 15)
-        self.itemSelfLifeTime.grid(row=6, column=3, padx=5, sticky=W)
+        self.itemSelfLifeTime.grid(row=4, column=4, padx=5, sticky=W)
         self.itemSelfLifeTime_LABEL = Label(self.frame, text = "Date Expires")
-        self.itemSelfLifeTime_LABEL.grid(row=5, column=3, pady=2, padx=5, sticky=W)
+        self.itemSelfLifeTime_LABEL.grid(row=3, column=4, pady=2, padx=5, sticky=W)
+
+        itemFilepath = "C:\\Projects\\Testing Location\\Smart Kitchen\\Product Image\\NoPictureAvailable.gif"
+        self.photo = PhotoImage(file = itemFilepath)
+        self.imageCanvas = Canvas(self.frame, width=220, height=220)
+        self.imageCanvas.grid(row=5, column=3, rowspan=6, columnspan=3, padx=5, pady=5)
+        self.imageCanvas.create_image(100,100, image = self.photo)
+
+##        self.photo = PhotoImage(Image.open(itemFilepath))
+##        self.label = Label(image=self.photo)
+##        self.label.image = photo # keep a reference!
+##        label.pack()
+
+##        itemImage = Image.open(itemFilepath)
+##        self.itemPicture = PhotoImage(image=itemImage)
+##        self.itemPicture.grid(row=3, column=3, rowspan=7, columnspan=4, padx=5, pady=5)
 
         self.CloseButton = Button(self.frame, text="Close", command = self.frame.quit)
         self.CloseButton.grid(row=12, column=4, padx=5, pady = 5, sticky=E+S)
@@ -69,6 +87,11 @@ class ApplicationWindow():
             self.itemName.insert(0, foodInKitchen[listSelection[0]].itemName)
             self.itemDatePurchased.insert(0, foodInKitchen[listSelection[0]].datePurchased)
             self.itemSelfLifeTime.insert(0, foodInKitchen[listSelection[0]].itemShelfLife)
+
+            itemFilepath = "C:\\Projects\\Testing Location\\Smart Kitchen\\Product Image\\"+foodInKitchen[listSelection[0]].itemVIN+".gif"
+            self.photo = PhotoImage(file = itemFilepath)
+            self.imageCanvas.create_image(100,100, image = self.photo)
+            
         elif widgetSelected == self.CloseButton:
             self.frame.quit
             
@@ -85,7 +108,7 @@ def activate():
 
 def InitializeMainWindow(windowIndex):
     global windowVariable
-    windowIndex.geometry('330x240+50+50')
+    windowIndex.geometry('368x355+50+50')
     windowVariable = ApplicationWindow(windowIndex)
 
 def AccessDatabase():
@@ -94,7 +117,7 @@ def AccessDatabase():
         ListItem(foodInKitchen[i].itemName)
 
 def CalculateSpoilTimes():
-    print "You are not calculating the times."
+    print "You are now calculating the times."
 
     timeString = strftime('%X %x %Z')
     foundTimeNow = re.search("(.*?):(.*?):[0-9][0-9] (.*?)/(.*?)/(.*?) .*", timeString)    
@@ -104,21 +127,11 @@ def CalculateSpoilTimes():
         monthNow = foundTimeNow.group(3)
         dayNow = foundTimeNow.group(4)
         yearNow = int(foundTimeNow.group(5)) + 2000
+           
+        TimeNow = db.TimeClass(hourNow, minuteNow, monthNow, dayNow, yearNow)
+        length = len(foodInKitchen)
+##        db.CheckIfItemsAreExpired(TimeNow, foodInKitchen)
         
-##    length = len(foodInKitchen)
-##    for i in range(0, length):
-##        foundTimeExpired = re.search("(.*?):(.*?) (.*?)\.(.*?)\.(.*?)$", foodInKitchen[i].itemTimeExpires)
-##        if foundTimeExpired:
-##            hourExpired = foundTimeExpired.group(1)
-##            minuteExpired = foundTimeExpired.group(2)
-##            monthExpired = foundTimeExpired.group(3)
-##            dayExpired = foundTimeExpired.group(4)
-##            yearExpired = foundTimeExpired.group(5)
-##            
-##            TimeNow = db.TimeClass(hourNow, minuteNow, monthNow, dayNow, yearNow)
-##            TimeItem = db.TimeClass(hourExpired, minuteExpired, monthExpired, dayExpired, yearExpired)
-##            db.CheckIfItemsAreExpired(TimeNow, TimeItem)
-            
 def InsertListData(listIndex):
     print listIndex
 

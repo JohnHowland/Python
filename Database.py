@@ -42,9 +42,35 @@ def ReadInDatabase():
     
     return KitchenStructure
 
-def CheckIfItemsAreExpired(Current, Item):
-    FoodList = open("FoodList.ini", "w")
-    FoodList.close()
+def CheckIfItemsAreExpired(Current, foodStructure):
+    timeStamp = Current.hour+":"+Current.minute+" "+Current.month+"."+Current.day+"."+str(Current.year)
 
-    FoodIndex = ConfigParser.ConfigParser()
+    FoodListIndex = ConfigParser.ConfigParser()
+    FoodListIndex.add_section("TimeStamp")
+    FoodListIndex.set("TimeStamp", "TimeAdded", timeStamp)
+
+    length = len(foodStructure)
+    for i in range(0, length):
+        timeTilExpiresString = foodStructure[i].itemShelfLife
+        if "day" in timeTilExpiresString or "d" in timeTilExpiresString:
+            print "Found days"
+            found = re.findall('\d+', timeTilExpiresString)
+            number = int(found[0])*24
+        elif "hour" in timeTilExpiresString or "hr" in timeTilExpiresString or "h" in timeTilExpiresString:
+            print "Found hours"
+            found = re.findall('\d+', timeTilExpiresString)
+            number = int(found[0])
+        elif "year" in timeTilExpiresString or "yr" in timeTilExpiresString or "y" in timeTilExpiresString:
+            print "Found years"
+            found = re.findall('\d+', timeTilExpiresString)
+            number = int(found[0])*24*365
+        else:
+            number = 0
+        print "The number is: "+str(number)
+
+        
+
+    FoodList = open("FoodList.ini", "w+")
+    FoodListIndex.write(FoodList)
+    FoodList.close()
     
